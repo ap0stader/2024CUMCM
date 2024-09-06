@@ -9,7 +9,7 @@ from SPIRAL import ArchimedeanSpiral
 from util import get_spiral_background
 
 # 创建结果保存目录
-RESULT_DIR = CONST.RESULT_ROOT + "Q1/"
+RESULT_DIR = CONST.RESULT_ROOT + "Q1_plot/"
 os.makedirs(RESULT_DIR, exist_ok=True)
 
 # 创建螺线
@@ -32,13 +32,13 @@ def annotate_point(axis, number, theta):
 
 
 # 共需300秒数据
-for second in range(SIM_SECOND + 1):
-    print("正在计算第 " + str(second) + " 秒信息")
+for sec in range(SIM_SECOND + 1):
+    print("正在计算第 " + str(sec) + " 秒信息")
     print("当前龙头前把手的位置为θ=" + "{:.4f}".format(head_theta / (2 * np.pi)) + "x2π")
     # 获取极坐标系绘制底图
     figure, ax = get_spiral_background(spiral, PARA.Q12_SPIRAL_PLOT_LOOP, PARA.Q12_SPIRAL_PLOT_POINT_NUM)
     # 设置图表标题
-    figure.suptitle("Time: " + str(second) + " s", fontsize=60, fontweight='bold')
+    figure.suptitle("Time: " + str(sec) + " s", fontsize=60, fontweight='bold')
     # 绘制龙头前把手的位置
     ax.plot(head_theta, spiral.p(head_theta), 'x', color="red", markersize=20, markeredgewidth=2)
     annotate_point(ax, 0, head_theta)
@@ -63,12 +63,12 @@ for second in range(SIM_SECOND + 1):
         last_body_theta = next_body_theta
 
     # 减少图表更新
-    if ENV.SHOW_PLOT and second % 5 == 0:
+    if ENV.SHOW_PLOT and sec % 5 == 0:
         figure.show()
     # 保存图表
-    figure.savefig(RESULT_DIR + str(second) + ".png")
+    figure.savefig(RESULT_DIR + str(sec) + ".png")
     # 关闭图表
     plt.close(figure)
 
     # 求解龙头前把手新的位置
-    head_theta = spiral.point_before_curve(head_theta, CONST.DEFAULT_HEAD_SPEED)
+    head_theta = spiral.point_before_curve(head_theta, HEAD_SECOND_CURVE_LENGTH)

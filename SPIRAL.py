@@ -11,9 +11,17 @@ class ArchimedeanSpiral:
     def __init__(self, spiral_distance):
         self.b = spiral_distance / (2 * np.pi)
 
-    # 极径：p = b * θ
+    # 极径：p = bθ
     def p(self, theta):
         return self.b * theta
+
+    # 转换为x坐标：x = pcosθ
+    def x(self, theta):
+        return self.p(theta) * np.cos(theta)
+
+    # 转换为y坐标：y = psinθ
+    def y(self, theta):
+        return self.p(theta) * np.sin(theta)
 
     # 弧长：θ1到θ2的弧长
     def curve_length(self, theta1, theta2):
@@ -42,3 +50,6 @@ class ArchimedeanSpiral:
         solution = fsolve(equation, x0=(known_theta + guess))
         return float(solution[0])
 
+    # 计算螺线上某一点的切线的斜率
+    def tangent_slope(self, theta):
+        return (np.sin(theta) + theta * np.cos(theta)) / (np.cos(theta) - theta * np.sin(theta))
