@@ -4,14 +4,12 @@ import os
 
 from matplotlib import patches
 from scipy.optimize import brentq, fsolve
-
-# 模拟精度：1s
-SIMULATION_ALL_STEP = 430
+from shapely.geometry import Point, Polygon
 
 # 创建题目结果目录
-RESULT_DIR = "./result/Q1/"
+RESULT_DIR = "./result/Q2/"
 os.makedirs("./result/", exist_ok=True)
-os.makedirs("./result/Q1/", exist_ok=True)
+os.makedirs(RESULT_DIR, exist_ok=True)
 
 # 阿基米德螺线方程：r = b * θ
 # 阿基米德螺线参数
@@ -26,6 +24,8 @@ ALL_WIDTH_HALF = 15  # 30cm / 2
 PADDING_WIDTH_DIAGONAL_SQUARE = ALL_PADDING_HALF ** 2 + ALL_WIDTH_HALF ** 2
 HEAD_SPEED = 100  # 1m/s
 
+# 模拟精度：1s
+SIMULATION_ALL_STEP = 430
 # 每一模拟步骤龙头前把手行进的距离
 STEP_HEAD_CURVE_LENGTH = HEAD_SPEED
 
@@ -69,6 +69,7 @@ def solve_next_ben_f_theta(ben_length, last_theta):
     return float(solution[0])
 
 
+# 根据两个把手中心点的位置计算板凳四个角的坐标位置
 def get_four_corner_point(bench_length, last_theta, new_theta):
     # 计算四个顶点
     last_bench_f_x = spiral(last_theta) * np.cos(last_theta)
@@ -116,12 +117,6 @@ def get_four_corner_point(bench_length, last_theta, new_theta):
 # 龙头位于螺线第16圈A点处
 start_head_theta = 16 * 2 * np.pi
 
-# 计算最多能走多少秒
-all_curve_length = calc_curve_length(0, start_head_theta)
-max_step = int(all_curve_length / STEP_HEAD_CURVE_LENGTH)
-print("自开始点到坐标轴原点的弧长共 " + str(all_curve_length) + " cm")
-print("仅考虑龙头前把手的运动，仅可运动 " + str(max_step) + " 秒")
-
 # 确定起始的位置
 now_head_theta = start_head_theta
 
@@ -130,46 +125,60 @@ spiral_plot_r = spiral(spiral_plot_theta)
 
 # 实验结果是最多走
 for step in range(SIMULATION_ALL_STEP + 1):  # 共需300s数据
-    assert step < max_step
     print("正在计算第 " + str(step) + " 秒信息")
     # 绘制底图
-    figure, ax = plt.subplots(figsize=(20, 20), layout="constrained", subplot_kw={"projection": "polar"})
+    figure, ax = plt.subplots(figsize=(20, 22), layout="constrained", subplot_kw={"projection": "polar"})
     ax.spines['polar'].set_visible(False)
     ax.plot(spiral_plot_theta, spiral_plot_r, color="green", linewidth=1)
     # 龙头前把手的位置绘制
-    print("当前龙头前把手的位置的θ=" + "{:.4f}".format(now_head_theta / (2 * np.pi)))
+    print("当前龙头前把手的位置的θ=" + "{:.4f}".format(now_head_theta / (2 * np.pi)) + "x2π")
     ax.plot(now_head_theta, spiral(now_head_theta), 'x', color="red", markersize=10, markeredgewidth=2)
     ax.annotate("1", (now_head_theta, spiral(now_head_theta)),
-                textcoords="offset fontsize", xytext=(1, 0), fontsize=18)
+                textcoords="offset fontsize", xytext=(0.1, 0), fontsize=18)
     # 龙头后第一节前把手的位置
     second_ben_f_theta = solve_next_ben_f_theta(FIRST_LENGTH, now_head_theta)
     ax.annotate("2", (second_ben_f_theta, spiral(second_ben_f_theta)),
-                textcoords="offset fontsize", xytext=(1, 0), fontsize=18)
+                textcoords="offset fontsize", xytext=(0.1, 0), fontsize=18)
     first_segment = np.array([now_head_theta, second_ben_f_theta])
     ax.plot(first_segment, spiral(first_segment), '--', color="red", linewidth=2)
-    _, p_four_corner_point = get_four_corner_point(FIRST_LENGTH, now_head_theta, second_ben_f_theta)
+    # 绘制龙头的板凳
+    c_four_corner_point, p_four_corner_point = get_four_corner_point(FIRST_LENGTH, now_head_theta, second_ben_f_theta)
     polygon = patches.Polygon(p_four_corner_point, closed=True, facecolor=(1, 0, 0, 0.2), edgecolor="red",
                               linewidth=0.5)
     ax.add_patch(polygon)
+    # 保存龙头前端尖锐点
+    head_head_sharp_point = Point(c_four_corner_point[0])
+    # 保存龙头后端尖锐点
+    head_tail_sharp_point = Point(c_four_corner_point[3])
 
     # 后222节前把手位置
     last_ben_f_theta = second_ben_f_theta
     for ben in range(3, 225):  # 3 <= ben <= 224 第 224 号为最后一节的后把手
         new_ben_f_theta = solve_next_ben_f_theta(OTHER_LENGTH, last_ben_f_theta)
         ax.annotate(str(ben), (new_ben_f_theta, spiral(new_ben_f_theta)),
-                    textcoords="offset fontsize", xytext=(1, 0), fontsize=18)
+                    textcoords="offset fontsize", xytext=(0.1, 0), fontsize=18)
         new_segment = np.array([last_ben_f_theta, new_ben_f_theta])
         ax.plot(new_segment, spiral(new_segment), 'x--', color="blue", linewidth=2, markersize=10, markeredgewidth=2)
-        _, p_four_corner_point = get_four_corner_point(OTHER_LENGTH, last_ben_f_theta, new_ben_f_theta)
+        # 绘制其他的板凳
+        c_four_corner_point, p_four_corner_point = get_four_corner_point(OTHER_LENGTH, last_ben_f_theta,
+                                                                         new_ben_f_theta)
         polygon = patches.Polygon(p_four_corner_point, closed=True, facecolor=(0, 0, 1, 0.2), edgecolor="blue",
                                   linewidth=0.5)
         ax.add_patch(polygon)
+        # 判断，在300步之后才开始判断
+        if step >= 300 and ben <= 30:
+            judge_polygon = Polygon(c_four_corner_point)
+            if judge_polygon.contains(head_head_sharp_point):
+                print("在第 " + str(step) + " 龙头前方发生碰撞，发生碰撞的板凳是第 " + str(ben - 1) + "条")
+            if judge_polygon.contains(head_tail_sharp_point):
+                print("在第 " + str(step) + " 龙头前方发生碰撞，发生碰撞的板凳是第 " + str(ben - 1) + "条")
+
         last_ben_f_theta = new_ben_f_theta
 
     # 显示图片并保存
-    figure.suptitle("Time " + str(step) + " second", fontsize=60, fontweight='bold')
+    figure.suptitle("Time " + str(step) + " step", fontsize=60, fontweight='bold')
 
-    if step > 400:
+    if step >= 400:
         figure.show()
         figure.savefig(RESULT_DIR + str(step) + ".png")
     plt.close(figure)
