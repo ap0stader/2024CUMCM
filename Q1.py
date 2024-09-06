@@ -60,11 +60,6 @@ def solve_next_bench_forehead_theta(bench_length, last_theta):
                 + (theta * np.sin(theta) - last_theta_sin) ** 2
                 - right_constant)
 
-        # Why Bug?
-        # return theta ** 2 - (
-        #         2 * theta * (last_theta_cos * np.cos(theta) + last_theta_sin * np.sin(theta))
-        #         + head_theta ** 2 - right_constant)
-
     guess = np.arccos((2 * spiral(last_theta) ** 2 - bench_length ** 2) / (2 * spiral(last_theta) ** 2))
     solution = fsolve(equation, x0=(last_theta + guess))
     return float(solution[0])
