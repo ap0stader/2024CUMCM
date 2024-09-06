@@ -1,0 +1,4 @@
+# 问题1-2绘图时螺线的圈数
+Q12_SPIRAL_PLOT_LOOP = 22
+# 问题1-2绘图时螺线的点数
+Q12_SPIRAL_PLOT_POINT_NUM = 5000
