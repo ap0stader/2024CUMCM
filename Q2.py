@@ -6,7 +6,7 @@ from matplotlib import patches
 from scipy.optimize import brentq, fsolve
 
 # 模拟精度：1s
-SIMULATION_ALL_STEP = 100
+SIMULATION_ALL_STEP = 430
 
 # 创建题目结果目录
 RESULT_DIR = "./result/Q1/"
@@ -69,17 +69,17 @@ def solve_next_ben_f_theta(ben_length, last_theta):
     return float(solution[0])
 
 
-def get_four_corner_point(last_theta, new_theta):
+def get_four_corner_point(bench_length, last_theta, new_theta):
     # 计算四个顶点
     last_bench_f_x = spiral(last_theta) * np.cos(last_theta)
     last_bench_f_y = spiral(last_theta) * np.sin(last_theta)
     new_ben_f_x = spiral(new_theta) * np.cos(new_theta)
     new_ben_f_y = spiral(new_theta) * np.sin(new_theta)
     # 前一板凳左侧点的配置
-    vertical_x = (ALL_PADDING_HALF / FIRST_LENGTH) * (new_ben_f_x - last_bench_f_x)
-    vertical_y = (ALL_PADDING_HALF / FIRST_LENGTH) * (new_ben_f_y - last_bench_f_y)
-    horizontal_x = -(ALL_WIDTH_HALF / FIRST_LENGTH) * (new_ben_f_y - last_bench_f_y)
-    horizontal_y = (ALL_WIDTH_HALF / FIRST_LENGTH) * (new_ben_f_x - last_bench_f_x)
+    vertical_x = (ALL_PADDING_HALF / bench_length) * (new_ben_f_x - last_bench_f_x)
+    vertical_y = (ALL_PADDING_HALF / bench_length) * (new_ben_f_y - last_bench_f_y)
+    horizontal_x = -(ALL_WIDTH_HALF / bench_length) * (new_ben_f_y - last_bench_f_y)
+    horizontal_y = (ALL_WIDTH_HALF / bench_length) * (new_ben_f_x - last_bench_f_x)
     # 前方左侧点
     last_sharp_x = last_bench_f_x - vertical_x - horizontal_x
     last_sharp_y = last_bench_f_y - vertical_y - horizontal_y
@@ -138,7 +138,7 @@ for step in range(SIMULATION_ALL_STEP + 1):  # 共需300s数据
     ax.plot(spiral_plot_theta, spiral_plot_r, color="green", linewidth=1)
     # 龙头前把手的位置绘制
     print("当前龙头前把手的位置的θ=" + "{:.4f}".format(now_head_theta / (2 * np.pi)))
-    ax.plot(now_head_theta, spiral(now_head_theta), 'x', color="red", markersize=20, markeredgewidth=2)
+    ax.plot(now_head_theta, spiral(now_head_theta), 'x', color="red", markersize=10, markeredgewidth=2)
     ax.annotate("1", (now_head_theta, spiral(now_head_theta)),
                 textcoords="offset fontsize", xytext=(1, 0), fontsize=18)
     # 龙头后第一节前把手的位置
@@ -146,9 +146,10 @@ for step in range(SIMULATION_ALL_STEP + 1):  # 共需300s数据
     ax.annotate("2", (second_ben_f_theta, spiral(second_ben_f_theta)),
                 textcoords="offset fontsize", xytext=(1, 0), fontsize=18)
     first_segment = np.array([now_head_theta, second_ben_f_theta])
-    ax.plot(first_segment, spiral(first_segment), '--', color="red", linewidth=3)
-    _, p_four_corner_point = get_four_corner_point(now_head_theta, second_ben_f_theta)
-    polygon = patches.Polygon(p_four_corner_point, closed=True, color="red")
+    ax.plot(first_segment, spiral(first_segment), '--', color="red", linewidth=2)
+    _, p_four_corner_point = get_four_corner_point(FIRST_LENGTH, now_head_theta, second_ben_f_theta)
+    polygon = patches.Polygon(p_four_corner_point, closed=True, facecolor=(1, 0, 0, 0.2), edgecolor="red",
+                              linewidth=0.5)
     ax.add_patch(polygon)
 
     # 后222节前把手位置
@@ -158,14 +159,19 @@ for step in range(SIMULATION_ALL_STEP + 1):  # 共需300s数据
         ax.annotate(str(ben), (new_ben_f_theta, spiral(new_ben_f_theta)),
                     textcoords="offset fontsize", xytext=(1, 0), fontsize=18)
         new_segment = np.array([last_ben_f_theta, new_ben_f_theta])
-        ax.plot(new_segment, spiral(new_segment), 'x--', color="blue", linewidth=5, markersize=20, markeredgewidth=2)
+        ax.plot(new_segment, spiral(new_segment), 'x--', color="blue", linewidth=2, markersize=10, markeredgewidth=2)
+        _, p_four_corner_point = get_four_corner_point(OTHER_LENGTH, last_ben_f_theta, new_ben_f_theta)
+        polygon = patches.Polygon(p_four_corner_point, closed=True, facecolor=(0, 0, 1, 0.2), edgecolor="blue",
+                                  linewidth=0.5)
+        ax.add_patch(polygon)
         last_ben_f_theta = new_ben_f_theta
 
     # 显示图片并保存
     figure.suptitle("Time " + str(step) + " second", fontsize=60, fontweight='bold')
 
-    figure.show()
-    figure.savefig(RESULT_DIR + str(step) + ".png")
+    if step > 400:
+        figure.show()
+        figure.savefig(RESULT_DIR + str(step) + ".png")
     plt.close(figure)
 
     now_head_theta = solve_next_now_head_theta(now_head_theta)
