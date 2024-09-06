@@ -32,6 +32,8 @@ SIMULATION_ALL_STEP = 430 * PRECISE_DIVISION
 STEP_HEAD_CURVE_LENGTH = HEAD_SPEED / PRECISE_DIVISION
 # 跳过的轮数
 SKIP_STEP = 400 * PRECISE_DIVISION
+# 开始绘图的论述
+START_FIGURE_STEP = 410 * PRECISE_DIVISION
 
 
 # 阿基米德螺线公式
@@ -129,7 +131,6 @@ for step in range(SKIP_STEP):
 spiral_plot_theta = np.linspace(0, 22 * 2 * np.pi, 5000)
 spiral_plot_r = spiral(spiral_plot_theta)
 
-# 实验结果是最多走
 for step in range(SKIP_STEP, SIMULATION_ALL_STEP + 1):
     print("正在计算第 " + str(step) + " 轮信息")
     # 绘制底图
@@ -172,21 +173,21 @@ for step in range(SKIP_STEP, SIMULATION_ALL_STEP + 1):
                                   linewidth=0.5)
         ax.add_patch(polygon)
         # 判断，在300步之后才开始判断
-        if step >= 400 * PRECISE_DIVISION and ben <= 30:
+        if ben <= 30:
             judge_polygon = Polygon(c_four_corner_point)
             if judge_polygon.contains(head_head_sharp_point):
-                print("在第 " + str(step) + " 龙头前方发生碰撞，发生碰撞的板凳是第 " + str(ben - 1) + "条")
+                print("在第 " + str(step) + " 龙头前方发生碰撞，发生碰撞的板凳是第 " + str(ben - 1) + " 条")
             if judge_polygon.contains(head_tail_sharp_point):
-                print("在第 " + str(step) + " 龙头前方发生碰撞，发生碰撞的板凳是第 " + str(ben - 1) + "条")
+                print("在第 " + str(step) + " 龙头前方发生碰撞，发生碰撞的板凳是第 " + str(ben - 1) + " 条")
 
         last_ben_f_theta = new_ben_f_theta
 
     # 显示图片并保存
     figure.suptitle("Time " + str(step) + " step", fontsize=60, fontweight='bold')
 
-    # if step >= 300 * PRECISE_DIVISION:
-    #     figure.show()
-    #     figure.savefig(RESULT_DIR + str(step) + ".png")
+    if step >= START_FIGURE_STEP:
+        figure.show()
+        figure.savefig(RESULT_DIR + str(step) + ".png")
     plt.close(figure)
 
     now_head_theta = solve_next_now_head_theta(now_head_theta)

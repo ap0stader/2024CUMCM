@@ -79,7 +79,6 @@ now_head_theta = start_head_theta
 spiral_plot_theta = np.linspace(0, 22 * 2 * np.pi, 5000)
 spiral_plot_r = spiral(spiral_plot_theta)
 
-# 实验结果是最多走
 for step in range(SIMULATION_ALL_STEP + 1):  # 共需300s数据
     assert step < max_step
     print("正在计算第 " + str(step) + " 秒信息")

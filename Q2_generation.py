@@ -6,11 +6,6 @@ from matplotlib import patches
 from scipy.optimize import brentq, fsolve
 from shapely.geometry import Point, Polygon
 
-# 创建题目结果目录
-RESULT_DIR = "./result/Q2/"
-os.makedirs("./result/", exist_ok=True)
-os.makedirs(RESULT_DIR, exist_ok=True)
-
 # 阿基米德螺线方程：r = b * θ
 # 阿基米德螺线参数
 SPIRAL_B = 55 / (2 * np.pi)
@@ -24,10 +19,16 @@ ALL_WIDTH_HALF = 15  # 30cm / 2
 PADDING_WIDTH_DIAGONAL_SQUARE = ALL_PADDING_HALF ** 2 + ALL_WIDTH_HALF ** 2
 HEAD_SPEED = 100  # 1m/s
 
+# 精细模拟，一秒钟均分成几份
+PRECISE_DIVISION = 50
 # 模拟精度：1s
-SIMULATION_ALL_STEP = 430
+SIMULATION_ALL_STEP = 430 * PRECISE_DIVISION
 # 每一模拟步骤龙头前把手行进的距离
-STEP_HEAD_CURVE_LENGTH = HEAD_SPEED
+STEP_HEAD_CURVE_LENGTH = HEAD_SPEED / PRECISE_DIVISION
+# 跳过的轮数
+SKIP_STEP = 400 * PRECISE_DIVISION
+# 开始绘图的论述
+START_FIGURE_STEP = 410 * PRECISE_DIVISION
 
 
 # 阿基米德螺线公式
@@ -114,37 +115,60 @@ def get_four_corner_point(bench_length, last_theta, new_theta):
     return c_point, p_point
 
 
+# 计算螺线上某一点的切线的斜率
+def spiral_tangent_slope(theta):
+    return (np.sin(theta) + theta * np.cos(theta)) / (np.cos(theta) - theta * np.sin(theta))
+
+
+# 计算速度
+def calc_speed(last_speed, last_theta, new_theta):
+    ben_slope = ((spiral(new_theta) * np.sin(new_theta) - spiral(last_theta) * np.sin(last_theta)) /
+                 (spiral(new_theta) * np.cos(new_theta) - spiral(last_theta) * np.cos(last_theta)))
+    last_theta_tangent_slope = spiral_tangent_slope(last_theta)
+    new_theta_tangent_slope = spiral_tangent_slope(new_theta)
+    last_ben_angle = np.arctan(np.abs((last_theta_tangent_slope - ben_slope)
+                                      / (1 + last_theta_tangent_slope * ben_slope)))
+    new_ben_angle = np.arctan(np.abs((new_theta_tangent_slope - ben_slope)
+                                     / (1 + new_theta_tangent_slope * ben_slope)))
+    new_speed = (last_speed * np.cos(last_ben_angle)) / np.cos(new_ben_angle)
+    return new_speed
+
+
 # 龙头位于螺线第16圈A点处
 start_head_theta = 16 * 2 * np.pi
 
 # 确定起始的位置
 now_head_theta = start_head_theta
+for step in range(SKIP_STEP):
+    now_head_theta = solve_next_now_head_theta(now_head_theta)
 
 spiral_plot_theta = np.linspace(0, 22 * 2 * np.pi, 5000)
 spiral_plot_r = spiral(spiral_plot_theta)
 
-for step in range(SIMULATION_ALL_STEP + 1):  # 共需300s数据
-    print("正在计算第 " + str(step) + " 秒信息")
-    # 绘制底图
-    figure, ax = plt.subplots(figsize=(20, 22), layout="constrained", subplot_kw={"projection": "polar"})
-    ax.spines['polar'].set_visible(False)
-    ax.plot(spiral_plot_theta, spiral_plot_r, color="green", linewidth=1)
-    # 龙头前把手的位置绘制
+# 存储的数据
+data = list()
+break_flag = False
+
+for step in range(SKIP_STEP, SIMULATION_ALL_STEP + 1):
+    data.append(list())
+    array_index = step - SKIP_STEP
+    print("正在计算第 " + str(step) + " 轮信息")
     print("当前龙头前把手的位置的θ=" + "{:.4f}".format(now_head_theta / (2 * np.pi)) + "x2π")
-    ax.plot(now_head_theta, spiral(now_head_theta), 'x', color="red", markersize=10, markeredgewidth=2)
-    ax.annotate("1", (now_head_theta, spiral(now_head_theta)),
-                textcoords="offset fontsize", xytext=(0.1, 0), fontsize=18)
+    data[array_index].append((now_head_theta,
+                              spiral(now_head_theta) * np.cos(now_head_theta),
+                              spiral(now_head_theta) * np.sin(now_head_theta),
+                              HEAD_SPEED))
     # 龙头后第一节前把手的位置
     second_ben_f_theta = solve_next_ben_f_theta(FIRST_LENGTH, now_head_theta)
-    ax.annotate("2", (second_ben_f_theta, spiral(second_ben_f_theta)),
-                textcoords="offset fontsize", xytext=(0.1, 0), fontsize=18)
-    first_segment = np.array([now_head_theta, second_ben_f_theta])
-    ax.plot(first_segment, spiral(first_segment), '--', color="red", linewidth=2)
+    second_ben_f_speed = calc_speed(HEAD_SPEED, now_head_theta, second_ben_f_theta)
+    data[array_index].append((second_ben_f_theta,
+                              spiral(second_ben_f_theta) * np.cos(second_ben_f_theta),
+                              spiral(second_ben_f_theta) * np.sin(second_ben_f_theta),
+                              second_ben_f_speed))
     # 绘制龙头的板凳
     c_four_corner_point, p_four_corner_point = get_four_corner_point(FIRST_LENGTH, now_head_theta, second_ben_f_theta)
     polygon = patches.Polygon(p_four_corner_point, closed=True, facecolor=(1, 0, 0, 0.2), edgecolor="red",
                               linewidth=0.5)
-    ax.add_patch(polygon)
     # 保存龙头前端尖锐点
     head_head_sharp_point = Point(c_four_corner_point[0])
     # 保存龙头后端尖锐点
@@ -152,34 +176,38 @@ for step in range(SIMULATION_ALL_STEP + 1):  # 共需300s数据
 
     # 后222节前把手位置
     last_ben_f_theta = second_ben_f_theta
+    last_ben_f_speed = second_ben_f_speed
     for ben in range(3, 225):  # 3 <= ben <= 224 第 224 号为最后一节的后把手
         new_ben_f_theta = solve_next_ben_f_theta(OTHER_LENGTH, last_ben_f_theta)
-        ax.annotate(str(ben), (new_ben_f_theta, spiral(new_ben_f_theta)),
-                    textcoords="offset fontsize", xytext=(0.1, 0), fontsize=18)
-        new_segment = np.array([last_ben_f_theta, new_ben_f_theta])
-        ax.plot(new_segment, spiral(new_segment), 'x--', color="blue", linewidth=2, markersize=10, markeredgewidth=2)
-        # 绘制其他的板凳
-        c_four_corner_point, p_four_corner_point = get_four_corner_point(OTHER_LENGTH, last_ben_f_theta,
-                                                                         new_ben_f_theta)
-        polygon = patches.Polygon(p_four_corner_point, closed=True, facecolor=(0, 0, 1, 0.2), edgecolor="blue",
-                                  linewidth=0.5)
-        ax.add_patch(polygon)
-        # 判断，在300步之后才开始判断
-        if step >= 300 and ben <= 30:
+        new_ben_f_speed = calc_speed(last_ben_f_speed, last_ben_f_theta, new_ben_f_theta)
+        data[array_index].append((new_ben_f_theta,
+                                  spiral(new_ben_f_theta) * np.cos(new_ben_f_theta),
+                                  spiral(new_ben_f_theta) * np.sin(new_ben_f_theta),
+                                  new_ben_f_speed))
+
+        c_four_corner_point, _ = get_four_corner_point(OTHER_LENGTH, last_ben_f_theta,
+                                                       new_ben_f_theta)
+        if ben <= 30:
             judge_polygon = Polygon(c_four_corner_point)
             if judge_polygon.contains(head_head_sharp_point):
                 print("在第 " + str(step) + " 龙头前方发生碰撞，发生碰撞的板凳是第 " + str(ben - 1) + " 条")
+                break_flag = True
             if judge_polygon.contains(head_tail_sharp_point):
                 print("在第 " + str(step) + " 龙头前方发生碰撞，发生碰撞的板凳是第 " + str(ben - 1) + " 条")
+                break_flag = True
 
         last_ben_f_theta = new_ben_f_theta
-
-    # 显示图片并保存
-    figure.suptitle("Time " + str(step) + " step", fontsize=60, fontweight='bold')
-
-    if step >= 400:
-        figure.show()
-        figure.savefig(RESULT_DIR + str(step) + ".png")
-    plt.close(figure)
+        last_ben_f_speed = new_ben_f_speed
 
     now_head_theta = solve_next_now_head_theta(now_head_theta)
+    print(np.shape(data[array_index]))
+    print("第一个点的情况：" + str(data[array_index][0]))
+    print("最后一个点的情况：" + str(data[array_index][223]))
+    if break_flag:
+        break
+
+# 数据解读方法
+# 第一维时间，从SKIP_STEP所指定的时间开始
+# 第二维第几个板凳把手，0表示龙头前把手，1-222表示221节龙身+1节龙尾前把手，223表示龙尾后把手
+# 第三维，第一个数字是theta，第二个数字是x坐标，第三个数字是y坐标，第四个数字是速度
+# theta的单位为弧度，其余数字的长度单位均为cm

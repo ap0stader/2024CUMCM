@@ -59,10 +59,12 @@ def solve_next_ben_f_theta(ben_length, last_theta):
     return float(solution[0])
 
 
+# 计算螺线上某一点的切线的斜率
 def spiral_tangent_slope(theta):
     return (np.sin(theta) + theta * np.cos(theta)) / (np.cos(theta) - theta * np.sin(theta))
 
 
+# 计算速度
 def calc_speed(last_speed, last_theta, new_theta):
     ben_slope = ((spiral(new_theta) * np.sin(new_theta) - spiral(last_theta) * np.sin(last_theta)) /
                  (spiral(new_theta) * np.cos(new_theta) - spiral(last_theta) * np.cos(last_theta)))
@@ -88,15 +90,13 @@ print("仅考虑龙头前把手的运动，仅可运动 " + str(max_step) + " �
 # 确定起始的位置
 now_head_theta = start_head_theta
 
-# 存储数据，下标表示的第几节龙身，0表示龙头
+# 存储的数据
 data = list()
 
-# 实验结果是最多走
 for step in range(SIMULATION_ALL_STEP + 1):  # 共需300s数据
     assert step < max_step
     data.append(list())
     print("正在计算第 " + str(step) + " 秒信息")
-    # 龙头前把手的位置绘制
     print("当前龙头前把手的位置的θ=" + "{:.4f}".format(now_head_theta / (2 * np.pi)) + "x2π")
     data[step].append((now_head_theta,
                        spiral(now_head_theta) * np.cos(now_head_theta),
@@ -121,6 +121,7 @@ for step in range(SIMULATION_ALL_STEP + 1):  # 共需300s数据
                            spiral(new_ben_f_theta) * np.sin(new_ben_f_theta),
                            new_ben_f_speed))
         last_ben_f_theta = new_ben_f_theta
+        last_ben_f_speed = new_ben_f_speed
 
     now_head_theta = solve_next_now_head_theta(now_head_theta)
     print(np.shape(data[step]))
