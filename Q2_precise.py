@@ -25,13 +25,13 @@ PADDING_WIDTH_DIAGONAL_SQUARE = ALL_PADDING_HALF ** 2 + ALL_WIDTH_HALF ** 2
 HEAD_SPEED = 100  # 1m/s
 
 # 精细模拟，一秒钟均分成几份
-PRECISE_DIVISION = 5
+PRECISE_DIVISION = 100
 # 模拟精度：1s
 SIMULATION_ALL_STEP = 430 * PRECISE_DIVISION
 # 每一模拟步骤龙头前把手行进的距离
 STEP_HEAD_CURVE_LENGTH = HEAD_SPEED / PRECISE_DIVISION
 # 跳过的轮数
-SKIP_STEP = 0 * PRECISE_DIVISION
+SKIP_STEP = 400 * PRECISE_DIVISION
 
 
 # 阿基米德螺线公式
@@ -172,7 +172,7 @@ for step in range(SKIP_STEP, SIMULATION_ALL_STEP + 1):
                                   linewidth=0.5)
         ax.add_patch(polygon)
         # 判断，在300步之后才开始判断
-        if step >= 300 and ben <= 30:
+        if step >= 400 * PRECISE_DIVISION and ben <= 30:
             judge_polygon = Polygon(c_four_corner_point)
             if judge_polygon.contains(head_head_sharp_point):
                 print("在第 " + str(step) + " 龙头前方发生碰撞，发生碰撞的板凳是第 " + str(ben - 1) + "条")
@@ -184,9 +184,9 @@ for step in range(SKIP_STEP, SIMULATION_ALL_STEP + 1):
     # 显示图片并保存
     figure.suptitle("Time " + str(step) + " step", fontsize=60, fontweight='bold')
 
-    if step >= 2060:
-        figure.show()
-        figure.savefig(RESULT_DIR + str(step) + ".png")
+    # if step >= 300 * PRECISE_DIVISION:
+    #     figure.show()
+    #     figure.savefig(RESULT_DIR + str(step) + ".png")
     plt.close(figure)
 
     now_head_theta = solve_next_now_head_theta(now_head_theta)
