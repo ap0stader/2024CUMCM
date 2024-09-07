@@ -19,7 +19,7 @@ os.makedirs(RESULT_DIR, exist_ok=True)
 spiral = ArchimedeanSpiral(CONST.Q12_SPIRAL_DISTANCE)
 
 # 精细模拟，一秒钟均分成几份
-SEC_DIVISION = 1
+SEC_DIVISION = 50
 # 模拟的秒数
 SIM_SECOND = 430
 # 模拟的轮数
@@ -85,9 +85,11 @@ for step in range(SKIP_STEP, SIM_STEP + 1):
         if ben <= PARA.Q2_JUDGE_BODY:
             judge_polygon = Polygon(c_points)
             if judge_polygon.contains(head_head_sharp_point):
-                print("在第 " + str(step) + " 龙头前方发生碰撞，发生碰撞的龙身是第 " + str(ben - 1) + " 块")
+                print("在第 " + str(step) + " 步（" + "{:.4f}".format(step / SEC_DIVISION) +
+                      "秒）龙头前方发生碰撞，发生碰撞的龙身是第 " + str(ben) + " 块")
             if judge_polygon.contains(head_tail_sharp_point):
-                print("在第 " + str(step) + " 龙头后方发生碰撞，发生碰撞的龙身是第 " + str(ben - 1) + " 块")
+                print("在第 " + str(step) + " 步（" + "{:.4f}".format(step / SEC_DIVISION) +
+                      "秒）龙头后方发生碰撞，发生碰撞的龙身是第 " + str(ben) + " 块")
         # 迭代
         last_body_theta = next_body_theta
 
@@ -100,4 +102,5 @@ for step in range(SKIP_STEP, SIM_STEP + 1):
     # 关闭图表
     plt.close(figure)
 
+    # 求解龙头前把手新的位置
     head_theta = spiral.point_before_curve(head_theta, HEAD_STEP_CURVE_LENGTH)
