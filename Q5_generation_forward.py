@@ -39,7 +39,7 @@ while head_speed <= end_head_speed:
     max_speed_step = 0
     for step in range(SIM_STEP + 1):
         if step % SEC_DIVISION == 0:
-            print("模拟已完成" + str(step / SEC_DIVISION) + "秒")
+            print(str(step / SEC_DIVISION), end=" ")
         # 求解第一节龙身前把手的位置
         first_body_theta = Q4.calc_next_handle_theta(head_theta, CONST.HEAD_BENCH_LEN)
         first_body_speed = calc_speed(Q4.get_shape(head_theta), CONST.DEFAULT_HEAD_SPEED, head_theta[1],
