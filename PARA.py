@@ -16,7 +16,7 @@ Q3_START_THETA_REVERSE = 2 * np.pi
 Q3_JUDGE_BODY = 50
 
 # 问题4绘图时螺线的圈数
-Q4_SPIRAL_PLOT_LOOP = 7
+Q4_SPIRAL_PLOT_LOOP = 7.5
 # 问题4绘图时螺线的点数
 Q4_SPIRAL_PLOT_POINT_NUM = 2000
 # 问题4绘图时圆的点数

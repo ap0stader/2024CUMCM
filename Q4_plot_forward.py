@@ -9,7 +9,7 @@ import Q4
 from UTIL import xy2polar, annotate_point
 
 # 创建结果保存目录
-RESULT_DIR = CONST.RESULT_ROOT + "Q4_plot/"
+RESULT_DIR = CONST.RESULT_ROOT + "Q4_plot_forward/"
 os.makedirs(RESULT_DIR, exist_ok=True)
 
 # 模拟精度：1秒
@@ -20,8 +20,6 @@ HEAD_SECOND_CURVE_LENGTH = CONST.DEFAULT_HEAD_SPEED
 
 # 确定起始的位置
 head_theta = [Q4.ThetaType.ROUND_IN, Q4.theta_C1_start]
-
-figure, ax = Q4.get_figure_background()
 
 for sec in range(SIM_SECOND + 1):
     print("正在计算第 " + str(sec) + " 秒信息")
@@ -69,6 +67,3 @@ for sec in range(SIM_SECOND + 1):
 
     # 求解龙头前把手新的位置
     head_theta = Q4.calc_next_head_theta(head_theta, HEAD_SECOND_CURVE_LENGTH)
-
-figure.show()
-plt.close(figure)
