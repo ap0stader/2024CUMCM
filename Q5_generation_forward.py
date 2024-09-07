@@ -42,7 +42,7 @@ while head_speed <= end_head_speed:
             print(str(step / SEC_DIVISION), end=" ", flush=True)
         # 求解第一节龙身前把手的位置
         first_body_theta = Q4.calc_next_handle_theta(head_theta, CONST.HEAD_BENCH_LEN)
-        first_body_speed = calc_speed(Q4.get_shape(head_theta), CONST.DEFAULT_HEAD_SPEED, head_theta[1],
+        first_body_speed = calc_speed(Q4.get_shape(head_theta), head_speed, head_theta[1],
                                       Q4.get_shape(first_body_theta), first_body_theta[1])
         if first_body_speed > max_speed:
             max_speed = first_body_speed
