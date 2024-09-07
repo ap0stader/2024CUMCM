@@ -69,7 +69,7 @@ while head_speed <= end_head_speed:
         head_theta = Q4.calc_next_head_theta(head_theta, head_step_curve_length)
 
     data_record = [head_speed, max_speed <= CONST.Q5_MAX_HEAD_SPEED, max_speed, max_speed_bench, max_speed_step]
-    print("记录情况：" + str(data_record))
+    print("\n记录情况：" + str(data_record))
     data.append(data_record)
 
     if max_speed > CONST.Q5_MAX_HEAD_SPEED:
