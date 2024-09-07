@@ -5,8 +5,8 @@ from shapely import Point, Polygon
 
 import CONST
 import PARA
+import Q2
 from SHAPE import ArchimedeanSpiral
-from UTIL import get_four_corner_point
 
 # 创建结果保存目录
 RESULT_DIR = CONST.RESULT_ROOT + "Q3_generation/"
@@ -44,7 +44,7 @@ while spiral_distance >= end_spiral_distance:
         # 求解第一节龙身前把手的位置和速度
         first_body_theta = spiral.point_after_chord(head_theta, CONST.HEAD_BENCH_LEN)
         # 获取龙头的板凳的边框
-        c_points, _ = get_four_corner_point(spiral, CONST.HEAD_BENCH_LEN, head_theta, first_body_theta)
+        c_points, _ = Q2.get_four_corner_point(spiral, CONST.HEAD_BENCH_LEN, head_theta, first_body_theta)
         # 保存龙头前端尖锐点
         head_head_sharp_point = Point(c_points[0])
         # 保存龙头后端尖锐点
@@ -56,7 +56,7 @@ while spiral_distance >= end_spiral_distance:
             # 求解下一节龙身前把手的位置和速度
             next_body_theta = spiral.point_after_chord(last_body_theta, CONST.OTHER_BENCH_LEN)
             # 获取龙身的板凳的边框
-            c_points, _ = get_four_corner_point(spiral, CONST.OTHER_BENCH_LEN, last_body_theta, next_body_theta)
+            c_points, _ = Q2.get_four_corner_point(spiral, CONST.OTHER_BENCH_LEN, last_body_theta, next_body_theta)
             # 只判断有可能发生碰撞的板凳
             if ben <= PARA.Q3_JUDGE_BODY:
                 judge_polygon = Polygon(c_points)

@@ -1,4 +1,5 @@
-# 阿基米德螺线类
+from abc import ABC, abstractmethod
+
 import numpy as np
 from scipy.optimize import brentq, fsolve
 
@@ -6,8 +7,17 @@ import CONST
 import PARA
 
 
+class Shape(ABC):
+    @abstractmethod
+    def x(self, theta):
+        pass
+
+    def y(self, theta):
+        pass
+
+
 # 盘入螺线
-class ArchimedeanSpiral:
+class ArchimedeanSpiral(Shape):
     b = CONST.Q12_SPIRAL_DISTANCE / (2 * np.pi)
 
     def __init__(self, spiral_distance):
@@ -92,7 +102,8 @@ class ArchimedeanSpiralReverse(ArchimedeanSpiral):
         return float(solution[0])
 
 
-class Round:
+# 掉头路径圆
+class Round(Shape):
     x_C = 0.0
     y_C = 0.0
     r = 0.0

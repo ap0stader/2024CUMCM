@@ -8,8 +8,9 @@ from shapely.geometry import Point, Polygon
 import CONST
 import ENV
 import PARA
+import Q2
 from SHAPE import ArchimedeanSpiral
-from UTIL import get_spiral_background, annotate_point, get_four_corner_point
+from UTIL import get_spiral_background, annotate_point
 
 # 创建结果保存目录
 RESULT_DIR = CONST.RESULT_ROOT + "Q2_plot/"
@@ -58,7 +59,7 @@ for step in range(SKIP_STEP, SIM_STEP + 1):
     ax.plot(head_bench_segment, spiral.p(head_bench_segment), '--', color="red", linewidth=2)
     annotate_point(ax, spiral, 1, first_body_theta)
     # 绘制龙头的板凳的边框
-    c_points, p_points = get_four_corner_point(spiral, CONST.HEAD_BENCH_LEN, head_theta, first_body_theta)
+    c_points, p_points = Q2.get_four_corner_point(spiral, CONST.HEAD_BENCH_LEN, head_theta, first_body_theta)
     bond = patches.Polygon(p_points, closed=True, facecolor=(1, 0, 0, 0.2), edgecolor="red", linewidth=0.5)
     ax.add_patch(bond)
     # 保存龙头前端尖锐点
@@ -77,7 +78,7 @@ for step in range(SKIP_STEP, SIM_STEP + 1):
         ax.plot(last_bench_segment, spiral.p(last_bench_segment), 'x--', color="blue", linewidth=2,
                 markersize=10, markeredgewidth=2)
         # 绘制龙身的板凳的边框
-        c_points, p_points = get_four_corner_point(spiral, CONST.OTHER_BENCH_LEN, last_body_theta, next_body_theta)
+        c_points, p_points = Q2.get_four_corner_point(spiral, CONST.OTHER_BENCH_LEN, last_body_theta, next_body_theta)
         bond = patches.Polygon(p_points, closed=True, facecolor=(0, 0, 1, 0.2), edgecolor="blue",
                                linewidth=0.5)
         ax.add_patch(bond)

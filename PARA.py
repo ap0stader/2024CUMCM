@@ -9,10 +9,15 @@ Q12_SPIRAL_PLOT_LOOP = 22
 Q12_SPIRAL_PLOT_POINT_NUM = 5000
 # 问题2判断哪些龙身可能与龙头相碰
 Q2_JUDGE_BODY = 30
+
 # 问题3模拟倒退的距离
 Q3_START_THETA_REVERSE = 2 * np.pi
-# 问题2判断哪些龙身可能与龙头相碰
+# 问题3判断哪些龙身可能与龙头相碰
 Q3_JUDGE_BODY = 50
 
+# 问题4绘图时螺线的圈数
+Q4_SPIRAL_PLOT_LOOP = 10
+# 问题4绘图时螺线的点数
+Q4_SPIRAL_PLOT_POINT_NUM = 3000
 # 问题4求解零点时的疏解区间
 Q4_EPSILON = np.pi / 100
