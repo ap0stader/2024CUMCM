@@ -2,6 +2,7 @@ from enum import Enum, unique
 
 import numpy as np
 from matplotlib import pyplot as plt
+from scipy.optimize import brentq
 
 import CONST
 import PARA
@@ -17,10 +18,10 @@ theta_B = theta_A
 
 x_A = CONST.Q345_TURNAROUND_RADIUS * np.cos(theta_A)
 y_A = CONST.Q345_TURNAROUND_RADIUS * np.sin(theta_A)
-A = [x_A, y_A]
+A = (x_A, y_A)
 x_B = -x_A
 y_B = -y_A
-B = [x_B, y_B]
+B = (x_B, y_B)
 
 k_A = ((np.sin(theta_A) + theta_A * np.cos(theta_A))
        / (np.cos(theta_A) - theta_A * np.sin(theta_A)))
@@ -30,15 +31,15 @@ delta_x = ((x_A ** 2 + y_A ** 2) /
 
 x_C1 = x_A + delta_x
 y_C1 = y_A - (delta_x / k_A)
-C1 = [x_C1, y_C1]
+C1 = (x_C1, y_C1)
 
 x_C2 = -x_A - alpha * delta_x
 y_C2 = -y_A + ((alpha * delta_x) / k_A)
-C2 = [x_C2, y_C2]
+C2 = (x_C2, y_C2)
 
 x_T = (2 / 3) * x_C2 + (1 / 3) * x_C1
 y_T = (2 / 3) * y_C2 + (1 / 3) * y_C1
-T = [x_T, y_T]
+T = (x_T, y_T)
 
 r_C1 = np.sqrt(1 + (1 / k_A ** 2)) * delta_x
 r_C2 = alpha * r_C1
@@ -143,3 +144,41 @@ def calc_next_head_theta(last_head_theta: [ThetaType, any], head_step_curve_leng
             return [ThetaType.SPIRAL_OUT, next_spiral_out]
         case _:
             raise Exception("ThetaType " + str(last_head_theta[0]) + " not supported")
+
+
+# 计算下一个龙身的前把手位置
+def calc_next_handle_theta(last_handle_theta: [ThetaType, any], bench_length):
+    def solve_cross_segment(next_type: ThetaType, left_theta, right_theta):
+        next_shape = get_shape([next_type, 0])
+
+        def equation(theta):
+            return ((theta2x(last_handle_theta) - next_shape.x(theta)) ** 2 +
+                    (theta2y(last_handle_theta) - next_shape.y(theta)) ** 2 -
+                    bench_length ** 2)
+
+        return [next_type, brentq(equation, left_theta - PARA.Q4_EPSILON, right_theta + PARA.Q4_EPSILON)]
+
+    match last_handle_theta[0]:
+        case ThetaType.SPIRAL_IN:
+            return [ThetaType.SPIRAL_IN, spiral_in.point_after_chord(last_handle_theta[1], bench_length)]
+        case ThetaType.ROUND_IN:
+            all_round_in_theta = theta_C1_start - round_in.chord_theta(bench_length)
+            if last_handle_theta[1] <= all_round_in_theta:
+                return [ThetaType.ROUND_IN, last_handle_theta[1] + round_in.chord_theta(bench_length)]
+            else:
+                return solve_cross_segment(ThetaType.SPIRAL_IN,
+                                           theta_A, spiral_in.point_after_chord(theta_A, bench_length))
+        case ThetaType.ROUND_OUT:
+            all_round_out_theta = theta_C2_start + round_out.chord_theta(bench_length)
+            if last_handle_theta[1] >= all_round_out_theta:
+                return [ThetaType.ROUND_OUT, last_handle_theta[1] - round_out.chord_theta(bench_length)]
+            else:
+                return solve_cross_segment(ThetaType.ROUND_IN,
+                                           theta_C1_end, theta_C1_end + round_in.chord_theta(bench_length))
+        case ThetaType.SPIRAL_OUT:
+            spiral_out_theta = spiral_in.point_after_chord(theta_B, bench_length)
+            if last_handle_theta[1] >= spiral_out_theta:
+                return [ThetaType.SPIRAL_OUT, spiral_out.point_after_chord(last_handle_theta[1], bench_length)]
+            else:
+                return solve_cross_segment(ThetaType.ROUND_OUT,
+                                           theta_C2_end - round_out.chord_theta(bench_length), theta_C2_end)

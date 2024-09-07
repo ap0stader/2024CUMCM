@@ -125,13 +125,17 @@ class Round(Shape):
     def curve_length(self, theta1, theta2):
         return self.r * np.abs(theta2 - theta1)
 
-    # 弦长：θ1到θ2的弧长
+    # 弦长：θ1到θ2弦长
     def chord_length(self, theta1, theta2):
         return np.sqrt(2 * self.r ** 2 * (1 - np.cos(np.abs(theta2 - theta1))))
 
     # 弧长对应的圆心角
     def curve_theta(self, curve_length):
         return curve_length / self.r
+
+    # 弦长对应的圆心角
+    def chord_theta(self, chord_length):
+        return np.arccos((2 * self.r ** 2 - chord_length ** 2) / (2 * self.r ** 2))
 
     # 计算螺线上某一点的切线的斜率
     def tangent_slope(self, theta):
