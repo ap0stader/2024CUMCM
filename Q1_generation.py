@@ -4,7 +4,7 @@ import numpy as np
 import os
 
 import CONST
-from SPIRAL import ArchimedeanSpiral
+from SHAPE import ArchimedeanSpiral
 from UTIL import calc_speed
 
 # 创建结果保存目录

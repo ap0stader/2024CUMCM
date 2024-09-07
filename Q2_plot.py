@@ -8,7 +8,7 @@ from shapely.geometry import Point, Polygon
 import CONST
 import ENV
 import PARA
-from SPIRAL import ArchimedeanSpiral
+from SHAPE import ArchimedeanSpiral
 from UTIL import get_spiral_background, annotate_point, get_four_corner_point
 
 # 创建结果保存目录

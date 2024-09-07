@@ -5,7 +5,7 @@ from shapely import Point, Polygon
 
 import CONST
 import PARA
-from SPIRAL import ArchimedeanSpiral
+from SHAPE import ArchimedeanSpiral
 from UTIL import get_four_corner_point
 
 # 创建结果保存目录
@@ -34,10 +34,10 @@ while spiral_distance >= end_spiral_distance:
     # 创建螺线
     spiral = ArchimedeanSpiral(spiral_distance)
     # 确定起始的位置
-    head_theta = spiral.theta(CONST.Q3_TURNAROUND_RADIUS) + PARA.Q3_START_THETA_REVERSE
+    head_theta = spiral.theta(CONST.Q345_TURNAROUND_RADIUS) + PARA.Q3_START_THETA_REVERSE
     print("初始龙头前把手距离螺线中心 " + "{:.2f}".format(spiral.p(head_theta)) + " 厘米")
     # 龙头停止的位置
-    end_head_theta = spiral.theta(CONST.Q3_TURNAROUND_RADIUS)
+    end_head_theta = spiral.theta(CONST.Q345_TURNAROUND_RADIUS)
     # 模拟后是否发生碰撞
     collision_flag = False
     while head_theta >= end_head_theta:

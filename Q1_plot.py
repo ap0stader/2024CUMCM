@@ -5,7 +5,7 @@ import os
 import CONST
 import ENV
 import PARA
-from SPIRAL import ArchimedeanSpiral
+from SHAPE import ArchimedeanSpiral
 from UTIL import get_spiral_background, annotate_point
 
 # 创建结果保存目录

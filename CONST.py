@@ -24,8 +24,8 @@ HEAD_BENCH_LEN = 341 - ALL_PADDING_LEN
 OTHER_BENCH_LEN = 220 - ALL_PADDING_LEN
 # 问题1-2的螺距、问题3的初始螺距
 Q12_SPIRAL_DISTANCE = 55
-# 问题3掉头范围的半径
-Q3_TURNAROUND_RADIUS = 450  # 9m / 2
+# 问题3-5掉头范围的半径
+Q345_TURNAROUND_RADIUS = 450  # 9m / 2
 # 问题4-5的螺距
 Q45_SPIRAL_DISTANCE = 170  # 1.7 m
 # 默认的龙头前把手速度
@@ -42,3 +42,6 @@ Q12_MAX_SIM_SECOND = 430
 # 以下数据的角单位为弧度
 # 问题1开始时龙头前把手位于螺线第16圈A点处
 Q12_HEAD_START_THETA = 16 * 2 * np.pi
+
+# 问题4-5前一段弧和后一段弧的半径的比例
+Q45_RADIUS_RATIO = 0.5

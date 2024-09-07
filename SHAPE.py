@@ -58,3 +58,38 @@ class ArchimedeanSpiral:
     # 计算螺线上某一点的切线的斜率
     def tangent_slope(self, theta):
         return (np.sin(theta) + theta * np.cos(theta)) / (np.cos(theta) - theta * np.sin(theta))
+
+
+class Round:
+    x_C = 0.0
+    y_C = 0.0
+    r = 0.0
+
+    def __init__(self, x_C, y_C, r):
+        self.x_C = x_C
+        self.y_C = y_C
+        self.r = r
+
+    # x坐标：x = x_C + rcosθ
+    def x(self, theta):
+        return self.x_C + self.r * np.cos(theta)
+
+    # y坐标：y = y_C + ycosθ
+    def y(self, theta):
+        return self.y_C + self.r * np.sin(theta)
+
+    # 弧长：θ1到θ2的弧长
+    def curve_length(self, theta1, theta2):
+        return self.r * np.abs(theta2 - theta1)
+
+    # 弦长：θ1到θ2的弧长
+    def chord_length(self, theta1, theta2):
+        return np.sqrt(2 * self.r ** 2 * (1 - np.cos(np.abs(theta2 - theta1))))
+
+    # 弧长对应的圆心角
+    def curve_theta(self, curve_length):
+        return curve_length / self.r
+
+    # 计算螺线上某一点的切线的斜率
+    def tangent_slope(self, theta):
+        return -(1 / np.tan(theta))

@@ -2,7 +2,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 import CONST
-from SPIRAL import ArchimedeanSpiral
+from SHAPE import ArchimedeanSpiral
 
 
 # 获取螺线绘图背景
