@@ -114,5 +114,6 @@ for step in range(SKIP_STEP, SIM_STEP + 1):
 # 第二维为把手，0表示龙头前把手，1-222表示221节龙身+1节龙尾前把手，223表示龙尾后把手
 # 第三维，第一个数字是theta，第二个数字是x坐标，第三个数字是y坐标，第四个数字是速度
 # theta的单位为弧度，其余数字的长度单位均为cm
+
 with open(RESULT_DIR + 'data.pkl', 'wb') as f:
     pickle.dump(data, f)

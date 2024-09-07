@@ -34,7 +34,7 @@ for sec in range(SIM_SECOND + 1):
     print("正在计算第 " + str(sec) + " 秒信息")
     print("当前龙头前把手的位置θ类型为" + str(head_theta[0]) +
           "，值为" + "{:.4f}".format(head_theta[1] / (2 * np.pi)) + "x2π")
-    # 绘制龙头前把手的位置
+    # 存储龙头前把手的信息
     store_point(sec, head_theta, CONST.DEFAULT_HEAD_SPEED)
     # 求解第一节龙身前把手的位置
     first_body_theta = Q4.calc_next_handle_theta(head_theta, CONST.HEAD_BENCH_LEN)
@@ -43,7 +43,7 @@ for sec in range(SIM_SECOND + 1):
     # 存储第一节龙身前把手的信息
     store_point(sec, first_body_theta, first_body_speed)
 
-    # 第2节龙身前把手至第222节龙身前把手的位置
+    # 第2节龙身前把手至第222节龙身前把手的位置和速度
     last_body_theta = first_body_theta
     last_body_speed = first_body_speed
     for ben in range(2, CONST.BODY_TAIL_COUNT + 1):

@@ -30,6 +30,8 @@ Q345_TURNAROUND_RADIUS = 450  # 9m / 2
 Q45_SPIRAL_DISTANCE = 170  # 1.7 m
 # 默认的龙头前把手速度
 DEFAULT_HEAD_SPEED = 100  # 1 m/s
+# 第5问最高的龙头前把手速度
+Q5_MAX_HEAD_SPEED = 200 # 2 m/s
 
 # 以下数据的时间单位为秒
 # 问题1-2的最大模拟描述，超过430秒，求解器可能出现问题

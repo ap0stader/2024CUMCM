@@ -43,7 +43,7 @@ for sec in range(SIM_SECOND + 1):
     # 存储第一节龙身前把手的信息
     store_point(sec, first_body_theta, first_body_speed)
 
-    # 第2节龙身前把手至第222节龙身前把手的位置
+    # 第2节龙身前把手至第222节龙身前把手的位置和速度
     last_body_theta = first_body_theta
     last_body_speed = first_body_speed
     for ben in range(2, CONST.BODY_TAIL_COUNT + 1):

@@ -92,6 +92,9 @@ while spiral_distance >= end_spiral_distance:
 
 # 数据解读方法
 # 第一维为数据索引
-# 第二维第一个数字是螺距，单位为厘米，第二
+# 第二维第一个数据是螺距，单位为厘米，第二个数据是是否发生碰撞
+# 第三个数据是掉头区域边界与螺线的交点对应的theta
+# 第四个数据和第五个数据分别时是结束模拟时龙头所在位置的theta和p
+
 with open(RESULT_DIR + 'data.pkl', 'wb') as f:
     pickle.dump(data, f)
