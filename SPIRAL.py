@@ -3,6 +3,7 @@ import numpy as np
 from scipy.optimize import brentq, fsolve
 
 import CONST
+import PARA
 
 
 class ArchimedeanSpiral:
@@ -14,6 +15,10 @@ class ArchimedeanSpiral:
     # 极径：p = bθ
     def p(self, theta):
         return self.b * theta
+
+    # 极角：θ = p/b
+    def theta(self, p):
+        return p / self.b
 
     # 转换为x坐标：x = pcosθ
     def x(self, theta):
@@ -32,7 +37,7 @@ class ArchimedeanSpiral:
 
     # 求解在某点前距离该点一定弧长的点
     # 用于求解龙头前把手的位置在当前位置前进一秒后的θ
-    def point_before_curve(self, known_theta, curve_length, search_width=np.pi):
+    def point_before_curve(self, known_theta, curve_length, search_width=PARA.POINT_BEFORE_CURVE_SEARCH_WIDTH):
         def equation(theta):
             return self.curve_length(theta, known_theta) - curve_length
 
