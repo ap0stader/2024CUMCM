@@ -1,24 +1,19 @@
 import numpy as np
-from matplotlib import pyplot as plt
 
 from SHAPE import ArchimedeanSpiral
 
 
-# 获取螺线绘图背景
-def get_spiral_background(spiral: ArchimedeanSpiral, loop: int, point_num: int):
-    spiral_plot_theta = np.linspace(0, loop * 2 * np.pi, point_num)
-    spiral_plot_r = spiral.p(spiral_plot_theta)
-
-    figure, ax = plt.subplots(figsize=(20, 21), layout="constrained", subplot_kw={"projection": "polar"})
-    ax.spines['polar'].set_visible(False)
-    ax.plot(spiral_plot_theta, spiral_plot_r, color="green", linewidth=1)
-
-    return figure, ax
+# 将直角坐标系的坐标转换为全局极坐标
+# 利用numpy的广播机制，可以进行批量的计算
+def xy2polar(x, y):
+    p = np.sqrt(x ** 2 + y ** 2)
+    theta = np.arctan(y / x)
+    return theta + np.pi + (x > 0) * np.pi, p
 
 
 # 给点标记文字
-def annotate_point(axis, spiral: ArchimedeanSpiral, number: int, theta):
-    axis.annotate(str(number), (theta, spiral.p(theta)),
+def annotate_point(axis, number: int, theta, p):
+    axis.annotate(str(number), (theta, p),
                   textcoords="offset fontsize", xytext=(0.1, 0.1), fontsize=18)
 
 

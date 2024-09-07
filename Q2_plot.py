@@ -8,9 +8,10 @@ from shapely.geometry import Point, Polygon
 import CONST
 import ENV
 import PARA
+import Q1
 import Q2
 from SHAPE import ArchimedeanSpiral
-from UTIL import get_spiral_background, annotate_point
+from UTIL import annotate_point
 
 # 创建结果保存目录
 RESULT_DIR = CONST.RESULT_ROOT + "Q2_plot/"
@@ -46,18 +47,18 @@ for step in range(SKIP_STEP, SIM_STEP + 1):
     print("正在计算第 " + "{:.4f}".format(step / SEC_DIVISION) + " 秒信息")
     print("当前龙头前把手的位置为θ=" + "{:.4f}".format(head_theta / (2 * np.pi)) + "x2π")
     # 获取极坐标系绘制底图
-    figure, ax = get_spiral_background(spiral, PARA.Q12_SPIRAL_PLOT_LOOP, PARA.Q12_SPIRAL_PLOT_POINT_NUM)
+    figure, ax = Q1.get_spiral_background(spiral)
     # 设置图表标题
     figure.suptitle("Time: " + "{:.4f}".format(step / SEC_DIVISION) + " s", fontsize=60, fontweight='bold')
     # 绘制龙头前把手的位置
     ax.plot(head_theta, spiral.p(head_theta), 'x', color="red", markersize=10, markeredgewidth=2)
-    annotate_point(ax, spiral, 0, head_theta)
+    annotate_point(ax, 0, head_theta, spiral.p(head_theta))
     # 求解第一节龙身前把手的位置
     first_body_theta = spiral.point_after_chord(head_theta, CONST.HEAD_BENCH_LEN)
     # 绘制第一节龙身前把手的位置和龙头板凳
     head_bench_segment = np.array([head_theta, first_body_theta])
     ax.plot(head_bench_segment, spiral.p(head_bench_segment), '--', color="red", linewidth=2)
-    annotate_point(ax, spiral, 1, first_body_theta)
+    annotate_point(ax, 1, first_body_theta, spiral.p(first_body_theta))
     # 绘制龙头的板凳的边框
     c_points, p_points = Q2.get_four_corner_point(spiral, CONST.HEAD_BENCH_LEN, head_theta, first_body_theta)
     bond = patches.Polygon(p_points, closed=True, facecolor=(1, 0, 0, 0.2), edgecolor="red", linewidth=0.5)
@@ -73,7 +74,7 @@ for step in range(SKIP_STEP, SIM_STEP + 1):
         # 求解下一节龙身前把手的位置
         next_body_theta = spiral.point_after_chord(last_body_theta, CONST.OTHER_BENCH_LEN)
         # 绘制这一节龙身前把手的位置和上一节板凳
-        annotate_point(ax, spiral, ben, next_body_theta)
+        annotate_point(ax, ben, next_body_theta, spiral.p(next_body_theta))
         last_bench_segment = np.array([last_body_theta, next_body_theta])
         ax.plot(last_bench_segment, spiral.p(last_bench_segment), 'x--', color="blue", linewidth=2,
                 markersize=10, markeredgewidth=2)

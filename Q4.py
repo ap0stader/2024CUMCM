@@ -1,9 +1,12 @@
 from enum import Enum, unique
 
 import numpy as np
+from matplotlib import pyplot as plt
 
 import CONST
-from SHAPE import ArchimedeanSpiral, ArchimedeanSpiralReverse, Round
+import PARA
+from SHAPE import ArchimedeanSpiral, ArchimedeanSpiralReverse, Round, Shape
+from UTIL import xy2polar
 
 # 详见GeoGebra文件ggb
 alpha = CONST.Q45_RADIUS_RATIO
@@ -63,6 +66,53 @@ class ThetaType(Enum):
     SPIRAL_OUT = 3
 
 
+# 根据theta类型获取对应图形
+def get_shape(theta: [ThetaType, any]) -> Shape:
+    match theta[0]:
+        case ThetaType.SPIRAL_IN:
+            return spiral_in
+        case ThetaType.ROUND_IN:
+            return round_in
+        case ThetaType.ROUND_OUT:
+            return round_out
+        case ThetaType.SPIRAL_OUT:
+            return spiral_out
+
+
+# 根据theta类型获取对应直角坐标系的坐标
+# 可以批量计算
+def theta2x(theta: [ThetaType, any]):
+    return get_shape(theta).x(theta[1])
+
+
+def theta2y(theta: [ThetaType, any]):
+    return get_shape(theta).y(theta[1])
+
+
+# 获取绘图背景
+def get_figure_background():
+    figure, ax = plt.subplots(figsize=(20, 21), layout="constrained", subplot_kw={"projection": "polar"})
+    ax.spines['polar'].set_visible(False)
+
+    spiral_plot_theta = np.linspace(theta_A, theta_A + PARA.Q4_SPIRAL_PLOT_LOOP * 2 * np.pi,
+                                    PARA.Q4_SPIRAL_PLOT_POINT_NUM)
+    spiral_in_plot_p = spiral_in.p(spiral_plot_theta)
+    spiral_out_plot_p = np.abs(spiral_out.p(spiral_plot_theta))
+
+    ax.plot(spiral_plot_theta, spiral_in_plot_p, color="orange", linewidth=1)
+    ax.plot(spiral_plot_theta + np.pi, spiral_out_plot_p, color="purple", linewidth=1)
+
+    round_in_theta = np.linspace(theta_C1_start, theta_C1_end, PARA.Q4_SPIRAL_PLOT_ROUND_IN_NUM)
+    round_in_global_theta, round_in_global_p = xy2polar(round_in.x(round_in_theta), round_in.y(round_in_theta))
+    round_out_theta = np.linspace(theta_C2_start, theta_C2_end, PARA.Q4_SPIRAL_PLOT_ROUND_OUT_NUM)
+    round_out_global_theta, round_out_global_p = xy2polar(round_out.x(round_out_theta), round_out.y(round_out_theta))
+
+    ax.plot(round_in_global_theta, round_in_global_p, color="green", linewidth=1)
+    ax.plot(round_out_global_theta, round_out_global_p, color="blue", linewidth=1)
+
+    return figure, ax
+
+
 # 计算龙头的下一个位置
 def calc_next_head_theta(last_head_theta: [ThetaType, any], head_step_curve_length):
     match last_head_theta[0]:
@@ -79,7 +129,7 @@ def calc_next_head_theta(last_head_theta: [ThetaType, any], head_step_curve_leng
                 assert next_round_out <= theta_C2_end
                 return [ThetaType.ROUND_OUT, next_round_out]
         case ThetaType.ROUND_OUT:
-            next_round_out = last_head_theta[1] - round_out.curve_theta(head_step_curve_length)
+            next_round_out = last_head_theta[1] + round_out.curve_theta(head_step_curve_length)
             # 判断是否仍然在round_out上
             if next_round_out <= theta_C2_end:
                 return [ThetaType.ROUND_OUT, next_round_out]
