@@ -62,7 +62,7 @@ for step in range(SKIP_STEP, SIM_STEP + 1):
     store_point(array_index, head_theta, CONST.DEFAULT_HEAD_SPEED)
     # 求解第一节龙身前把手的位置和速度
     first_body_theta = spiral.point_after_chord(head_theta, CONST.HEAD_BENCH_LEN)
-    first_body_speed = calc_speed(spiral, CONST.DEFAULT_HEAD_SPEED, head_theta, first_body_theta)
+    first_body_speed = calc_speed(spiral, CONST.DEFAULT_HEAD_SPEED, head_theta, spiral, first_body_theta)
     # 存储第一节龙身前把手的信息
     store_point(array_index, first_body_theta, first_body_speed)
     # 获取龙头的板凳的边框
@@ -78,7 +78,7 @@ for step in range(SKIP_STEP, SIM_STEP + 1):
     for ben in range(2, CONST.BODY_TAIL_COUNT + 1):
         # 求解下一节龙身前把手的位置和速度
         next_body_theta = spiral.point_after_chord(last_body_theta, CONST.OTHER_BENCH_LEN)
-        next_body_speed = calc_speed(spiral, last_body_speed, last_body_theta, next_body_theta)
+        next_body_speed = calc_speed(spiral, last_body_speed, last_body_theta, spiral, next_body_theta)
         # 存储这一节龙身前把手的信息
         store_point(array_index, next_body_theta, next_body_speed)
         # 获取龙身的板凳的边框

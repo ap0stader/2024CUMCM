@@ -1,6 +1,6 @@
 import numpy as np
 
-from SHAPE import ArchimedeanSpiral
+from SHAPE import Shape
 
 
 # 将直角坐标系的坐标转换为全局极坐标
@@ -18,10 +18,11 @@ def annotate_point(axis, number: int, theta, p):
 
 
 # 根据切线和板凳的夹角计算速度
-def calc_speed(spiral: ArchimedeanSpiral, last_speed, last_theta, next_theta):
-    bench_slope = (spiral.y(next_theta) - spiral.y(last_theta)) / (spiral.x(next_theta) - spiral.x(last_theta))
-    last_theta_tangent_slope = spiral.tangent_slope(last_theta)
-    next_theta_tangent_slope = spiral.tangent_slope(next_theta)
+def calc_speed(last_shape: Shape, last_speed, last_theta, next_shape: Shape, next_theta):
+    bench_slope = ((next_shape.y(next_theta) - last_shape.y(last_theta)) /
+                   (next_shape.x(next_theta) - last_shape.x(last_theta)))
+    last_theta_tangent_slope = last_shape.tangent_slope(last_theta)
+    next_theta_tangent_slope = next_shape.tangent_slope(next_theta)
     last_bench_angle = np.arctan(np.abs((last_theta_tangent_slope - bench_slope)
                                         / (1 + last_theta_tangent_slope * bench_slope)))
     next_bench_angle = np.arctan(np.abs((next_theta_tangent_slope - bench_slope)

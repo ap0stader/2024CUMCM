@@ -12,7 +12,12 @@ class Shape(ABC):
     def x(self, theta):
         pass
 
+    @abstractmethod
     def y(self, theta):
+        pass
+
+    @abstractmethod
+    def tangent_slope(self, theta):
         pass
 
 
