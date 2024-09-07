@@ -14,8 +14,10 @@ BODY_TAIL_COUNT = 221 + 1 + 1
 # 以下数据的长度单位为厘米
 # 孔的中心距离最近的板头 27.5 cm
 ALL_PADDING_HALF = 27.5
-# 两孔的中心距离最近的版头的距离之和
+# 两孔的中心距离最近的板头的距离之和
 ALL_PADDING_LEN = ALL_PADDING_HALF * 2
+# 板凳宽度的一半
+ALL_WIDTH_HALF = 15  # 30cm / 2
 # 龙头板凳两孔之间的距离（有效长度）
 HEAD_BENCH_LEN = 341 - ALL_PADDING_LEN
 # 其他板凳两孔之间的距离（有效长度）
@@ -37,4 +39,4 @@ Q12_MAX_SIM_SECOND = 430
 
 # 以下数据的角单位为弧度
 # 问题1开始时龙头前把手位于螺线第16圈A点处
-Q1_HEAD_START_THETA = 16 * 2 * np.pi
+Q12_HEAD_START_THETA = 16 * 2 * np.pi

@@ -5,7 +5,7 @@ import os
 
 import CONST
 from SPIRAL import ArchimedeanSpiral
-from util import calc_speed
+from UTIL import calc_speed
 
 # 创建结果保存目录
 RESULT_DIR = CONST.RESULT_ROOT + "Q1_generation/"
@@ -22,7 +22,7 @@ assert SIM_SECOND <= CONST.Q12_MAX_SIM_SECOND
 HEAD_SECOND_CURVE_LENGTH = CONST.DEFAULT_HEAD_SPEED
 
 # 确定起始的位置
-head_theta = CONST.Q1_HEAD_START_THETA
+head_theta = CONST.Q12_HEAD_START_THETA
 
 # 数据存储
 data = list()
@@ -46,7 +46,7 @@ for sec in range(SIM_SECOND + 1):
     # 存储第一节龙身前把手的信息
     store_point(sec, first_body_theta, first_body_speed)
 
-    # 第2节龙身前把手至第222节龙身前把手的位置
+    # 第2节龙身前把手至第222节龙身前把手的位置和速度
     last_body_theta = first_body_theta
     last_body_speed = first_body_speed
     for ben in range(2, CONST.BODY_TAIL_COUNT + 1):

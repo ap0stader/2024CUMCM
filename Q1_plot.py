@@ -6,7 +6,7 @@ import CONST
 import ENV
 import PARA
 from SPIRAL import ArchimedeanSpiral
-from util import get_spiral_background
+from UTIL import get_spiral_background, annotate_point
 
 # 创建结果保存目录
 RESULT_DIR = CONST.RESULT_ROOT + "Q1_plot/"
@@ -23,13 +23,7 @@ assert SIM_SECOND <= CONST.Q12_MAX_SIM_SECOND
 HEAD_SECOND_CURVE_LENGTH = CONST.DEFAULT_HEAD_SPEED
 
 # 确定起始的位置
-head_theta = CONST.Q1_HEAD_START_THETA
-
-
-def annotate_point(axis, number, theta):
-    axis.annotate(str(number), (theta, spiral.p(theta)),
-                  textcoords="offset fontsize", xytext=(0.1, 0.1), fontsize=18)
-
+head_theta = CONST.Q12_HEAD_START_THETA
 
 # 共需300秒数据
 for sec in range(SIM_SECOND + 1):
@@ -41,13 +35,13 @@ for sec in range(SIM_SECOND + 1):
     figure.suptitle("Time: " + str(sec) + " s", fontsize=60, fontweight='bold')
     # 绘制龙头前把手的位置
     ax.plot(head_theta, spiral.p(head_theta), 'x', color="red", markersize=20, markeredgewidth=2)
-    annotate_point(ax, 0, head_theta)
+    annotate_point(ax, spiral, 0, head_theta)
     # 求解第一节龙身前把手的位置
     first_body_theta = spiral.point_after_chord(head_theta, CONST.HEAD_BENCH_LEN)
     # 绘制第一节龙身前把手的位置和龙头板凳
     head_bench_segment = np.array([head_theta, first_body_theta])
     ax.plot(head_bench_segment, spiral.p(head_bench_segment), '-', color="red", linewidth=5)
-    annotate_point(ax, 1, first_body_theta)
+    annotate_point(ax, spiral, 1, first_body_theta)
 
     # 第2节龙身前把手至第222节龙身前把手的位置
     last_body_theta = first_body_theta
@@ -55,7 +49,7 @@ for sec in range(SIM_SECOND + 1):
         # 求解下一节龙身前把手的位置
         next_body_theta = spiral.point_after_chord(last_body_theta, CONST.OTHER_BENCH_LEN)
         # 绘制这一节龙身前把手的位置和上一节板凳
-        annotate_point(ax, ben, next_body_theta)
+        annotate_point(ax, spiral, ben, next_body_theta)
         last_bench_segment = np.array([last_body_theta, next_body_theta])
         ax.plot(last_bench_segment, spiral.p(last_bench_segment), 'x-', color="blue", linewidth=5,
                 markersize=20, markeredgewidth=2)
