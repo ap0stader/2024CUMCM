@@ -6,6 +6,7 @@ import CONST
 import PARA
 
 
+# 盘入螺线
 class ArchimedeanSpiral:
     b = CONST.Q12_SPIRAL_DISTANCE / (2 * np.pi)
 
@@ -58,6 +59,37 @@ class ArchimedeanSpiral:
     # 计算螺线上某一点的切线的斜率
     def tangent_slope(self, theta):
         return (np.sin(theta) + theta * np.cos(theta)) / (np.cos(theta) - theta * np.sin(theta))
+
+
+# 盘出螺线
+class ArchimedeanSpiralReverse(ArchimedeanSpiral):
+    # p < 0 时，表示的点在极角为θ的射线的反向延长线上
+    # 极径：p = -bθ
+    def p(self, theta):
+        return -(self.b * theta)
+
+    # 极角：θ = -p/b
+    def theta(self, p):
+        return -(p / self.b)
+
+    # 求解在某点前距离该点一定弧长的点
+    def point_before_curve(self, known_theta, curve_length, search_width=PARA.POINT_BEFORE_CURVE_SEARCH_WIDTH):
+        def equation(theta):
+            return self.curve_length(theta, known_theta) - curve_length
+
+        return brentq(equation, known_theta, known_theta + search_width)
+
+    # 求解在某点后距离该点一定弦长的点
+    # 用于已知板凳前把手求解板凳后把手（下一个板凳前把手）的θ
+    def point_after_chord(self, known_theta, chord_length):
+        def equation(theta):
+            return ((theta * np.cos(theta) - known_theta * np.cos(known_theta)) ** 2
+                    + (theta * np.sin(theta) - known_theta * np.sin(known_theta)) ** 2
+                    - ((chord_length ** 2) / (self.b ** 2)))
+
+        guess = np.arccos((2 * self.p(known_theta) ** 2 - chord_length ** 2) / (2 * self.p(known_theta) ** 2))
+        solution = fsolve(equation, x0=(known_theta - guess))
+        return float(solution[0])
 
 
 class Round:
