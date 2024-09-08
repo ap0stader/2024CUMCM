@@ -6,7 +6,6 @@ from matplotlib import patches
 from shapely.geometry import Point, Polygon
 
 import CONST
-import ENV
 import PARA
 import Q1
 import Q2
@@ -97,7 +96,7 @@ for step in range(SKIP_STEP, SIM_STEP + 1):
 
     if step >= START_FIGURE_STEP:
         # 减少图表更新
-        if ENV.SHOW_PLOT and step % 5 == 0:
+        if step % 5 == 0:
             figure.show()
         # 保存图表
         figure.savefig(RESULT_DIR + str(step) + ".png")

@@ -9,7 +9,6 @@ import PARA
 from SHAPE import ArchimedeanSpiral, ArchimedeanSpiralReverse, Round, Shape
 from UTIL import xy2polar
 
-# 详见GeoGebra文件ggb
 alpha = CONST.Q45_RADIUS_RATIO
 
 theta_A = (CONST.Q345_TURNAROUND_RADIUS /

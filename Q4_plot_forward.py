@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 import CONST
-import ENV
 import Q4
 from UTIL import xy2polar, annotate_point
 
@@ -58,7 +57,7 @@ for sec in range(SIM_SECOND + 1):
         last_global_p = next_global_p
 
     # 减少图表更新
-    if ENV.SHOW_PLOT and sec % 5 == 0:
+    if sec % 5 == 0:
         figure.show()
     # 保存图表
     figure.savefig(RESULT_DIR + str(sec) + ".png")

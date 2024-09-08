@@ -3,7 +3,6 @@ import numpy as np
 import os
 
 import CONST
-import ENV
 import Q1
 from SHAPE import ArchimedeanSpiral
 from UTIL import annotate_point
@@ -57,7 +56,7 @@ for sec in range(SIM_SECOND + 1):
         last_body_theta = next_body_theta
 
     # 减少图表更新
-    if ENV.SHOW_PLOT and sec % 5 == 0:
+    if sec % 5 == 0:
         figure.show()
     # 保存图表
     figure.savefig(RESULT_DIR + str(sec) + ".png")
